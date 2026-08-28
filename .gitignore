@@ -1,0 +1,4 @@
+.env
+venv/
+
+STREAMLIT_NOTES.md
