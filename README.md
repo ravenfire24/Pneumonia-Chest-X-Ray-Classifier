@@ -1,84 +1,58 @@
+# Pneumonia Chest X-Ray Classifier
 
-## Pneumonia Chest X-Ray Classifier
+Browser-based chest X-ray classification app for detecting **Normal**, **Pneumonia**, and **Tuberculosis** patterns, with pneumonia subtype classification for **Bacterial** and **Viral** results.
 
+The original Streamlit/PyTorch app has been migrated to **Next.js on Vercel**. Inference now runs in the browser with **ONNX Runtime Web**, avoiding heavyweight PyTorch serverless functions.
 
-  Deep learning-based medical image classification system for detecting **Pneumonia**, **Tuberculosis**, and **Normal** chest X-rays using **DenseNet121** and **PyTorch**.
-The model was trained on over **15,000+ chest X-ray images** with data augmentation and class-weighted loss to improve performance on imbalanced medical datasets.
+## Features
 
----
+- Upload PNG or JPEG chest X-ray images
+- Run a two-stage DenseNet121 classifier pipeline
+- View confidence scores for each model
+- Get a final triage verdict
+- Keep medical images client-side during inference
 
-## Live Demo
-https://pneumonia-chest-x-ray-classifier-zdegfsfuiszm2qrnxmu5py.streamlit.app/
+## Tech Stack
 
-### Features in the Demo
-- Upload chest X-ray images
-- Predict:
-  - Normal
-  - Pneumonia
-  - Tuberculosis
-- View model confidence scores
-- Test using sample X-ray images
+- Next.js
+- React
+- TypeScript
+- ONNX Runtime Web
+- Vercel
 
-##  Features
+## Model Flow
 
-- Multi-class chest X-ray classification
-- Transfer learning with DenseNet121
-- Image augmentation pipeline
-- Confusion matrix visualization
-- Model checkpoint saving/loading
-- PyTorch implementation
-- Training and evaluation scripts
----
-## 🛠️ Technologies Used
+1. Model 1 predicts `Normal`, `Pneumonia`, or `Tuberculosis`.
+2. Model 2 runs only when Model 1 predicts `Pneumonia`.
+3. If Model 1 pneumonia confidence is above 80%, Model 2's `Normal` class is ignored and the higher pneumonia subtype is used.
+4. Otherwise, Model 2's result is used directly.
 
-- Python
-- PyTorch
-- Torchvision
-- NumPy
-- Pandas
-- Matplotlib
-- scikit-learn
+## Local Development
 
----
+```bash
+npm install
+npm run dev
+```
 
-##  Model Architecture
+Open `http://localhost:3000`.
 
-This project uses:
+## Build
 
-- **DenseNet121**
-- Pretrained ImageNet weights
-- Fine-tuning for medical imaging tasks
-- Weighted CrossEntropyLoss for class imbalance handling
+```bash
+npm run build
+```
 
----
+## Model Export
 
-##  Dataset
+The deployed app uses ONNX models in `public/models/`.
 
-The dataset contains:
+To regenerate them from the original PyTorch checkpoints:
 
-| Class | Description |
-|---|---|
-| Normal | Healthy chest X-rays |
-| Pneumonia | Pneumonia infected lungs |
-| Tuberculosis | Tuberculosis infected lungs |
+```bash
+pip install -r requirements.txt
+python scripts/export_models_to_onnx.py
+```
 
-Dataset size: 15,000+ images
+## Medical Notice
 
-https://www.kaggle.com/datasets/muhammadrehan00/chest-xray-dataset
-
-https://www.kaggle.com/datasets/shreyanmohanty/chest-x-ray-dataset-for-pneumonia-classification
-
----
-
-##  Results
-
-| Metric | Score |
-|---|---|
-| Validation Accuracy | 85%+ |
-| Framework | PyTorch |
-| Model | DenseNet121 |
-
- ![alt text](https://github.com/ravenfire24/Pneumonia-Chest-X-Ray-Classifier/blob/main/result.JPG)
-
-
-
+This project is a research prototype and must not be used as a medical diagnosis tool.

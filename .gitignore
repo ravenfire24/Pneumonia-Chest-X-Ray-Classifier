@@ -1,4 +1,15 @@
+.DS_Store
 .env
 venv/
+node_modules/
+.npm-cache/
+.python-packages/
+.next/
+.vercel/
+.venv/
+out/
+*.tsbuildinfo
 
 STREAMLIT_NOTES.md
+
+.vercel

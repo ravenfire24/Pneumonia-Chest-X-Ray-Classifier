@@ -1,0 +1,12 @@
+.DS_Store
+.next/
+.npm-cache/
+.python-packages/
+.vercel/
+.venv/
+Models/
+node_modules/
+out/
+sample X-rays/
+venv/
+__pycache__/
