@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, AlertTriangle, FileImage, RotateCcw, ShieldAlert, UploadCloud } from "lucide-react";
+import { Activity, AlertTriangle, FileImage, RotateCcw, ShieldAlert, UploadCloud, X } from "lucide-react";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
 import type { InferenceSession, Tensor } from "onnxruntime-web/wasm";
 
@@ -198,6 +198,7 @@ function ProbabilityBars({ title, result }: { title: string; result: ModelResult
 
 export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const analysisRunId = useRef(0);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [model1, setModel1] = useState<ModelResult | null>(null);
@@ -214,6 +215,8 @@ export default function Home() {
   }, [model1, model2]);
 
   async function analyze(file: File) {
+    const runId = analysisRunId.current + 1;
+    analysisRunId.current = runId;
     setIsRunning(true);
     setError(null);
     setModel1(null);
@@ -228,17 +231,33 @@ export default function Home() {
 
     try {
       const tensor = await imageToTensor(file);
+      if (analysisRunId.current !== runId) {
+        return;
+      }
+
       const firstModel = await runModel("/models/model1.onnx", "model1", tensor, M1_CLASSES);
+      if (analysisRunId.current !== runId) {
+        return;
+      }
+
       setModel1(firstModel);
 
       if (firstModel.label === "Pneumonia") {
         const secondModel = await runModel("/models/model2.onnx", "model2", tensor, M2_CLASSES);
+        if (analysisRunId.current !== runId) {
+          return;
+        }
+
         setModel2(secondModel);
       }
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "The image could not be analyzed.");
+      if (analysisRunId.current === runId) {
+        setError(caught instanceof Error ? caught.message : "The image could not be analyzed.");
+      }
     } finally {
-      setIsRunning(false);
+      if (analysisRunId.current === runId) {
+        setIsRunning(false);
+      }
     }
   }
 
@@ -250,6 +269,7 @@ export default function Home() {
   }
 
   function reset() {
+    analysisRunId.current += 1;
     if (imageUrl) {
       URL.revokeObjectURL(imageUrl);
     }
@@ -293,6 +313,15 @@ export default function Home() {
             <div className="file-chip">
               <FileImage size={16} aria-hidden="true" />
               <span>{fileName}</span>
+              <button
+                className="remove-file-button"
+                type="button"
+                onClick={reset}
+                aria-label="Remove uploaded X-ray"
+                title="Remove uploaded X-ray"
+              >
+                <X size={16} aria-hidden="true" />
+              </button>
             </div>
           ) : null}
         </div>

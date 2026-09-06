@@ -162,9 +162,31 @@ h2 {
 }
 
 .file-chip span {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.remove-file-button {
+  align-items: center;
+  background: #f6e8e6;
+  border: 1px solid color-mix(in srgb, var(--danger) 22%, white);
+  border-radius: 8px;
+  color: var(--danger);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.remove-file-button:hover,
+.remove-file-button:focus-visible {
+  background: #f0d4d0;
+  outline: none;
 }
 
 .results-pane {
