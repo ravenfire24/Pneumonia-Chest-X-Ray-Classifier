@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, AlertTriangle, FileImage, RotateCcw, ShieldAlert, UploadCloud, X } from "lucide-react";
+import { Activity, AlertTriangle, FileImage, ShieldAlert, UploadCloud, X } from "lucide-react";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
 import type { InferenceSession, Tensor } from "onnxruntime-web/wasm";
 
@@ -213,6 +213,7 @@ export default function Home() {
 
     return getFinalResult(model1, model2);
   }, [model1, model2]);
+  const hasAnalysisState = Boolean(imageUrl || fileName || model1 || model2 || error || isRunning);
 
   async function analyze(file: File) {
     const runId = analysisRunId.current + 1;
@@ -290,8 +291,15 @@ export default function Home() {
           <p className="eyebrow">ONNX browser inference</p>
           <h1>Chest X-Ray Classifier</h1>
         </div>
-        <button className="icon-button" type="button" onClick={reset} aria-label="Reset analysis" title="Reset analysis">
-          <RotateCcw size={18} aria-hidden="true" />
+        <button
+          className="remove-analysis-button"
+          type="button"
+          onClick={reset}
+          disabled={!hasAnalysisState}
+          aria-label="Remove uploaded X-ray"
+          title="Remove uploaded X-ray"
+        >
+          Remove
         </button>
       </header>
 
