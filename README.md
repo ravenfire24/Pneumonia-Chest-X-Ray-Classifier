@@ -2,7 +2,7 @@
 
 Browser-based chest X-ray classification app for detecting **Normal**, **Pneumonia**, and **Tuberculosis** patterns, with pneumonia subtype classification for **Bacterial** and **Viral** results.
 
-Live demo: https://temporary-express-magenta-w5hg1ay.vercel.app
+Live demo: https://pneumonia-chest-x-ray-classifier.vercel.app
 
 ## Features
 
@@ -65,7 +65,7 @@ The deployed app uses ONNX models in `public/models/`.
 To regenerate them from the original PyTorch checkpoints:
 
 ```bash
-pip install -r requirements.txt
+pip install -r scripts/requirements-export.txt
 python scripts/export_models_to_onnx.py
 ```
 
