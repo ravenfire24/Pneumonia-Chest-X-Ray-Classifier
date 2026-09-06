@@ -2,7 +2,7 @@
 
 Browser-based chest X-ray classification app for detecting **Normal**, **Pneumonia**, and **Tuberculosis** patterns, with pneumonia subtype classification for **Bacterial** and **Viral** results.
 
-The original Streamlit/PyTorch app has been migrated to **Next.js on Vercel**. Inference now runs in the browser with **ONNX Runtime Web**, avoiding heavyweight PyTorch serverless functions.
+Live demo: https://temporary-express-magenta-w5hg1ay.vercel.app
 
 ## Features
 
@@ -19,6 +19,22 @@ The original Streamlit/PyTorch app has been migrated to **Next.js on Vercel**. I
 - TypeScript
 - ONNX Runtime Web
 - Vercel
+
+##  Dataset
+
+The dataset contains:
+
+| Class | Description |
+|---|---|
+| Normal | Healthy chest X-rays |
+| Pneumonia | Pneumonia infected lungs |
+| Tuberculosis | Tuberculosis infected lungs |
+
+Dataset size: 15,000+ images
+
+https://www.kaggle.com/datasets/muhammadrehan00/chest-xray-dataset
+
+https://www.kaggle.com/datasets/shreyanmohanty/chest-x-ray-dataset-for-pneumonia-classification
 
 ## Model Flow
 
@@ -53,6 +69,4 @@ pip install -r requirements.txt
 python scripts/export_models_to_onnx.py
 ```
 
-## Medical Notice
-
-This project is a research prototype and must not be used as a medical diagnosis tool.
+![alt text](https://github.com/ravenfire24/Pneumonia-Chest-X-Ray-Classifier/blob/main/result.JPG)
