@@ -8,6 +8,10 @@ const M1_CLASSES = ["Normal", "Pneumonia", "Tuberculosis"] as const;
 const M2_CLASSES = ["Bacterial", "Normal", "Viral"] as const;
 const PNEUMONIA_THRESHOLD = 0.8;
 const MODEL_INPUT_SIZE = 224;
+const MODEL_CHUNKS = {
+  model1: 2,
+  model2: 2
+} as const;
 
 type Probability = {
   label: string;
@@ -45,14 +49,43 @@ function getOrt() {
   return ortModulePromise;
 }
 
-async function getSession(modelPath: string, slot: "model1" | "model2") {
+async function fetchModelBytes(slot: "model1" | "model2") {
+  const chunks = await Promise.all(
+    Array.from({ length: MODEL_CHUNKS[slot] }, async (_, index) => {
+      const response = await fetch(`/model-chunks/${slot}.onnx.gz.${index}.part`);
+      if (!response.ok) {
+        throw new Error(`Unable to load ${slot} model chunk ${index + 1}.`);
+      }
+
+      return new Uint8Array(await response.arrayBuffer());
+    })
+  );
+  const compressedLength = chunks.reduce((total, chunk) => total + chunk.byteLength, 0);
+  const compressed = new Uint8Array(compressedLength);
+  let offset = 0;
+
+  for (const chunk of chunks) {
+    compressed.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  if (!("DecompressionStream" in window)) {
+    throw new Error("This browser cannot decompress the model files. Please use a current version of Chrome, Edge, or Firefox.");
+  }
+
+  const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+async function getSession(slot: "model1" | "model2") {
   const existing = slot === "model1" ? model1Session : model2Session;
   if (existing) {
     return existing;
   }
 
   const ort = await getOrt();
-  const session = await ort.InferenceSession.create(modelPath, {
+  const modelBytes = await fetchModelBytes(slot);
+  const session = await ort.InferenceSession.create(modelBytes, {
     executionProviders: ["wasm"],
     graphOptimizationLevel: "all"
   });
@@ -104,8 +137,8 @@ function softmax(logits: Float32Array | number[]) {
   return exps.map((value) => value / sum);
 }
 
-async function runModel(modelPath: string, slot: "model1" | "model2", tensor: Tensor, labels: readonly string[]) {
-  const session = await getSession(modelPath, slot);
+async function runModel(slot: "model1" | "model2", tensor: Tensor, labels: readonly string[]) {
+  const session = await getSession(slot);
   const feeds = { [session.inputNames[0]]: tensor };
   const output = await session.run(feeds);
   const logits = output[session.outputNames[0]].data as Float32Array;
@@ -236,7 +269,7 @@ export default function Home() {
         return;
       }
 
-      const firstModel = await runModel("/models/model1.onnx", "model1", tensor, M1_CLASSES);
+      const firstModel = await runModel("model1", tensor, M1_CLASSES);
       if (analysisRunId.current !== runId) {
         return;
       }
@@ -244,7 +277,7 @@ export default function Home() {
       setModel1(firstModel);
 
       if (firstModel.label === "Pneumonia") {
-        const secondModel = await runModel("/models/model2.onnx", "model2", tensor, M2_CLASSES);
+        const secondModel = await runModel("model2", tensor, M2_CLASSES);
         if (analysisRunId.current !== runId) {
           return;
         }

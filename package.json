@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "chunk-models": "node scripts/chunk-models.mjs",
     "start": "next start",
     "postinstall": "node scripts/copy-ort-wasm.mjs"
   },

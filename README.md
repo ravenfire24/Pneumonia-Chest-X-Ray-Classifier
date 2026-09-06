@@ -67,6 +67,7 @@ To regenerate them from the original PyTorch checkpoints:
 ```bash
 pip install -r scripts/requirements-export.txt
 python scripts/export_models_to_onnx.py
+npm run chunk-models
 ```
 
 ![alt text](https://github.com/ravenfire24/Pneumonia-Chest-X-Ray-Classifier/blob/main/result.JPG)
