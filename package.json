@@ -21,5 +21,8 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "typescript": "latest"
+  },
+  "allowScripts": {
+    "protobufjs": false
   }
 }

@@ -8,6 +8,7 @@ node_modules/
 .next/
 .vercel/
 out/
+public/models/
 .venv/
 *.tsbuildinfo
 
