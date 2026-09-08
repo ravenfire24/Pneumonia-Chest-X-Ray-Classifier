@@ -2,7 +2,7 @@
 
 Browser-based chest X-ray classification app for detecting **Normal**, **Pneumonia**, and **Tuberculosis** patterns, with pneumonia subtype classification for **Bacterial** and **Viral** results.
 
-Live demo: https://pneumonia-chest-x-ray-classifier.vercel.app
+Live App: https://pneumonia-chest-x-ray-classifier.vercel.app
 
 ## Features
 
